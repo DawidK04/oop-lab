@@ -1,4 +1,6 @@
 import { Product } from "./Product.js";
+import { Money } from "./domain/Money.js";
+
 
 export class KoszykItem {
     private _produkt: Product;
@@ -23,7 +25,7 @@ export class KoszykItem {
         this._ilosc += ilosc;
     }
 
-    suma(): number {
-        return this._produkt.Cena * this._ilosc;
+    suma(): Money {
+        return this._produkt.Cena.multiply(this._ilosc);
     }
 }

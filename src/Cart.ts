@@ -1,5 +1,6 @@
 import { KoszykItem } from "./CartItem.js";
 import { Money } from "./domain/Money.js";
+import { Size } from "./domain/Size.js";
 
 export class Koszyk {
     private static koszyki: Koszyk[] = [];
@@ -41,13 +42,29 @@ export class Koszyk {
     }
 
     sumaProduktow(): number {
-        return this._produkty.reduce((sum, item) => sum + item.suma(), 0);
+        return this._produkty.reduce((sum, item) => sum + item.suma().amount, 0);
+    }
+
+    getTotalWeight(): number {
+        return this._produkty.reduce(
+            (sum, item) => sum + (item.ilosc * 1),
+            0
+        );
+    }
+
+    getTotalSize(): Size {
+        const totalVolume = this._produkty.reduce((sum, item) => {
+            const itemSize = item.produkt.Size || new Size(10, 10, 10, "cm");
+            return sum + (itemSize.volume * item.ilosc);
+        }, 0);
+
+        const side = Math.pow(totalVolume, 1 / 3);
+        return new Size(side, side, side, "cm");
     }
 
     totalPrice(): Money {
         return this._produkty.reduce(
             (sum: Money, item: KoszykItem) =>
-                // sum.add(new Money(item.produkt.Cena * item.ilosc)),
                 sum.add(item.produkt.Cena.multiply(item.ilosc)),
             new Money(0)
         );

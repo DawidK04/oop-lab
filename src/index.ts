@@ -2,6 +2,13 @@ import { Product } from "./Product.js";
 import { Koszyk } from "./Cart.js";
 import { KoszykItem } from "./CartItem.js";
 import { Uzytkownik } from "./Uzytkownik.js";
+import { Money } from "./domain/Money.js";
+import { ShippingFeature } from "./domain/ProductFeature.js";
+import { Size } from "./domain/Size.js";
+import { Checkout } from "./app/Checkout.js";
+import { CourierShipping } from "./domain/shipping/CourierShipping.js";
+import { ExpressShipping } from "./domain/shipping/ExpressShipping.js";
+import { DroneShipping } from "./domain/shipping/DroneShipping.js";
 
 import { InMemoryProductRepository } from "./infra/InMemoryProductRepository.js";
 import { ListProducts } from "./app/ListProducts.js";
@@ -78,7 +85,37 @@ main();
 
 // console.log(`Suma całkowita: ${koszyk.sumaProduktow()} PLN`);
 
-// // Test usuwania
-// console.log(`\nUsuwam klawiaturę...`);
-// koszyk.usunProdukt(new KoszykItem(p3, 1));
-// console.log(`Nowa suma: ${koszyk.sumaProduktow()} PLN`);
+
+
+
+console.log(`\n--- Test Checkout ---`);
+const pTest_id = "test-123";
+const pTest = new Product("Test", new Money(10000, "PLN"), "Test opis", []);
+const pTestWithFeatures = new Product(pTest_id, "Test Integration", [
+    new ShippingFeature(500)
+]);
+pTestWithFeatures.Size = new Size(10, 10, 10, "cm");
+
+const cart = new Koszyk("Checkout Cart", 1);
+cart.dodajProdukt(new KoszykItem(pTest, 10));
+
+
+const checkout = new Checkout(new CourierShipping());
+const total = checkout.calculate(cart);
+const courier = new CourierShipping();
+console.log(`${courier.name()} (${courier.estimateDeliveryDays()} days): ${total.format()}`);
+
+const express = new ExpressShipping();
+console.log(`${express.name()} (${express.estimateDeliveryDays()} days): ${new Checkout(express).calculate(cart).format()}`);
+
+const drone = new DroneShipping();
+try {
+    console.log(`${drone.name()} (${drone.estimateDeliveryDays()} days): ${new Checkout(drone).calculate(cart).format()}`);
+} catch (e) {
+    console.log(`${drone.name()}: ERROR - ${e instanceof Error ? e.message : String(e)}`);
+}
+
+
+
+
+
