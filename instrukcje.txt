@@ -1,0 +1,29 @@
+Produkt
+---
+Nazwa
+Cena
+Opis
+Opinie
+
+
+Koszyk
+---
+produkt: Produkt
+ilość: magazyn
+     (ilość > 0)
+---
+produkty.list[KoszykItem]
+dodaj(item: KoszykItem)
+    - czy istnieje w produkty?
+    - czy istnieje w magazynie?
+usun(KoszykItem)
+lacznaSuma()
+
+
+Magazyn
+---
+Produkt -> Ilość
+
+Użytkownik
+---
+id
